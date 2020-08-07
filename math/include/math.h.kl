@@ -1,0 +1,26 @@
+--constant
+ROUTINE m_pi 						: REAL	  FROM kl_math
+ROUTINE d2r 						: REAL 	  FROM kl_math
+ROUTINE r2d 						: REAL 	  FROM kl_math
+
+-- numerical function
+ROUTINE factorial( k : INTEGER ) 			: REAL	  FROM kl_math
+ROUTINE power( base : INTEGER; exponent : INTEGER ) 		: INTEGER 	  FROM kl_math
+ROUTINE pow( base : REAL; exponent : INTEGER ) 		: REAL 	  FROM kl_math
+ROUTINE pow2( exponent : INTEGER ) 	     		: REAL 	  FROM kl_math
+ROUTINE sq( value : REAL	) 			: REAL 	  FROM kl_math
+ROUTINE sum( su : REAL; count : INTEGER ) 		: REAL 	  FROM kl_math
+
+--arithmetic function
+ROUTINE to_rad( deg : REAL ) 				: REAL	  FROM kl_math
+ROUTINE to_deg( rad : REAL ) 				: REAL 	  FROM kl_math
+
+ROUTINE almostEq(a: REAL; b: REAL; epsilon: REAL) 	: BOOLEAN FROM kl_math
+ROUTINE min(a: REAL; b: REAL) 				: REAL 	  FROM kl_math
+ROUTINE max(a: REAL; b: REAL) 				: REAL 	  FROM kl_math
+ROUTINE imin(a: INTEGER; b: INTEGER) 			: INTEGER FROM kl_math
+ROUTINE imax(a: INTEGER; b: INTEGER) 			: INTEGER FROM kl_math
+
+ROUTINE log2(item: REAL)		      		: REAL	  FROM kl_math
+ROUTINE log(item: REAL)	 		      		: REAL	  FROM kl_math
+ROUTINE floor(item: REAL)  	  	      		: INTEGER FROM kl_math

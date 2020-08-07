@@ -1,0 +1,80 @@
+-----------------------------------------------------------------------------------
+--! @file gravity
+--! @brief The Gravity Vector 
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+
+--! @brief the gravity lib
+PROGRAM gravity
+
+--! no motion group
+%ALPHABETIZE
+%NOBUSYLAMP 
+%NOLOCKGROUP
+%COMMENT = "gravity lib"
+%NOPAUSE = COMMAND + TPENABLE + ERROR 
+
+CONST
+	GRAVITY_VEKTOR_SIZE = 3
+
+TYPE
+	%INCLUDE include/type/vektor.t
+	%INCLUDE include/type/gravity.t
+
+%INCLUDE include/gravety.h
+%INCLUDE include/vektor.h
+
+--! @brief start of program
+BEGIN
+--! @end program
+END gravity
+
+--! @brief 
+--! 
+--! 
+ROUTINE gravity_new
+VAR
+	ret : Gravity_t
+BEGIN
+	ret.grav.size = GRAVITY_VEKTOR_SIZE;
+	ret.grav.column = true
+
+	ret.grav.data[1] = 0.0
+	ret.grav.data[2] = 0.0
+	ret.grav.data[3] = 9.81
+
+	RETURN (ret)
+END gravity_new
+
+ROUTINE get_gravity
+VAR
+	ret : Gravity_t
+	entry,status : INTEGER
+BEGIN
+	var_name = '$MRR_GRP['+ ind + ']'
+	
+	var_tmp = var_name + '.$GRV_x'
+	GET_VAR(entry, '*system*', var_tmp, ret.grav.data[1], status)
+	var_tmp = var_name + '.$GRV_y'
+	GET_VAR(entry, '*system*', var_tmp, ret.grav.data[2], status)
+	var_tmp = var_name + '.$GRV_z'
+	GET_VAR(entry, '*system*',var_tmp, ret.grav.data[3], status)		
+
+	RETURN (ret)
+END get_gravity
+
+ROUTINE set_gravity
+VAR
+	entry,status : INTEGER
+BEGIN
+	var_name = '$MRR_GRP['+ idx + ']'
+	
+	var_tmp = var_name + '.$GRV_x'
+	SET_VAR(entry, '*system*', var_tmp, this.grav.data[1], status)
+	var_tmp = var_name + '.$GRV_y'
+	SET_VAR(entry, '*system*', var_tmp, this.grav.data[2], status)
+	var_tmp = var_name + '.$GRV_z'
+	SET_VAR(entry, '*system*',var_tmp, this.grav.data[3], status)
+END set_gravity

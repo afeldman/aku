@@ -1,0 +1,89 @@
+-----------------------------------------------------------------------------------
+--! @file logic
+--! @brief The logic KAREL lib
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+PROGRAM logic_lib
+
+%NOLOCKGROUP
+%ALPHABETIZE 
+%COMMENT = 'logic lib' 
+%NOBUSYLAMP 
+%NOPAUSE = COMMAND + TPENABLE + ERROR
+
+%include include/logic.h
+
+BEGIN	
+END logic_lib
+
+--! @brief calculate xor for boolean
+--
+--! @detail calculate the xor given two boolean
+--
+--! @param x boolean
+--! @param y boolean
+--
+--! @return boolean
+ROUTINE xor_b
+  VAR
+	xor : BOOLEAN
+  BEGIN
+	
+	xor = ((NOT x) = y);
+	RETURN(xor)
+
+END xor_b
+
+--! @brief calculate xor for integer
+--
+--! @detail calculate the xor given two integer
+--
+--! @param x INTEGER
+--! @param y INTEGER
+--
+--! @return INTEGER
+ROUTINE xor
+BEGIN
+	RETURN( nand(x,y) AND (x OR y))
+END xor
+
+ROUTINE nand
+BEGIN
+	RETURN(NOT (x AND y))
+END nand
+
+ROUTINE nor
+BEGIN
+	RETURN(NOT (left OR right))
+END nor
+
+ROUTINE bandi
+BEGIN
+	RETURN ((right * left) MOD 2) --eigentlich mit bool
+
+END bandi
+
+ROUTINE band
+BEGIN
+	IF bandi(left,right) = 0 THEN
+	   RETURN (false)
+	ELSE
+ 	   RETURN (true)
+	ENDIF
+END band
+
+ROUTINE ldsum
+BEGIN
+	IF ldsumi(left,right) = 0 THEN
+	   RETURN (false)
+	ELSE
+ 	   RETURN (true)
+	ENDIF
+END ldsum
+
+ROUTINE ldsumi
+BEGIN
+	RETURN ((right+left) MOD 2) -- eigentlich mit bool
+END ldsumi

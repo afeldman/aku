@@ -1,0 +1,36 @@
+ROUTINE matrix_new					: Matrix_t				FROM matrix
+ROUTINE matrix_random					: Matrix_t				FROM matrix
+ROUTINE matrix_eye					: Matrix_t				FROM matrix
+
+ROUTINE is_singular_matrix(this: Matrix_t)	  	: BOOLEAN				FROM matrix
+ROUTINE is_matrix_square(this: Matrix_t)	        : BOOLEAN				FROM matrix
+ROUTINE is_matrix_symmetric(this: Matrix_t)	  	: BOOLEAN				FROM matrix
+ROUTINE matrix_is_equal(this: Matrix_t; m: Matrix_t)	: BOOLEAN				FROM matrix
+ROUTINE matrix_data(this: Matrix_t)			: ARRAY[*,*] OF REAL 	FROM matrix
+ROUTINE matrix_get(this: Matrix_t; r: INTEGER; c: INTEGER)	     : REAL 					FROM matrix
+ROUTINE matrix_set(this: Matrix_t; r: INTEGER; c: INTEGER; v: REAL)						FROM matrix
+ROUTINE matrix_submatrix(this:Matrix_t; rs: INTEGER; re: INTEGER; cs: INTEGER; ce: INTEGER)	: Matrix_t				FROM matrix
+ROUTINE matrix_copy(this: Matrix_t)								: Matrix_t				FROM matrix
+ROUTINE matrix_transpose(this: Matrix_t; res: ARRAY[*,*] OF REAL)				  					FROM matrix
+ROUTINE matrix_normal(this: Matrix_t)								: REAL					FROM matrix
+ROUTINE matrix_inf_norm(this: Matrix_t)								: REAL					FROM matrix
+ROUTINE matrix_frobenius_norm(this: Matrix_t)							: REAL					FROM matrix
+ROUTINE matrix_negate(this: Matrix_t)								: Matrix_t				FROM matrix
+ROUTINE matrix_mult(this: Matrix_t; s: REAL)												FROM matrix
+ROUTINE matrix_matrix_mult(this: Matrix_t; m: Matrix_t; res: Matrix_t)									FROM matrix
+ROUTINE matrix_neq(this: Matrix_t; m: Matrix_t)							: BOOLEAN				FROM matrix
+ROUTINE matrix_add(this: Matrix_t; m: Matrix_t)												FROM matrix
+ROUTINE matrix_sub(this: Matrix_t; m: Matrix_t)												FROM matrix
+ROUTINE matrix_trace(this: Matrix_t)								: REAL					FROM matrix
+ROUTINE matrix_diagonal(v: REAL)								: Matrix_t				FROM matrix
+ROUTINE matrix_col_data(this: Matrix_t; idx: INTEGER) 						: ARRAY[*] OF REAL 			FROM matrix
+ROUTINE matrix_row_data(this: Matrix_t; idx: INTEGER) 						: ARRAY[*] OF REAL			FROM matrix
+ROUTINE matrix_determinante(this: Matrix_t; determinant: REAL)										FROM matrix
+ROUTINE matrix_solve(this: Matrix_t; b: Matrix_t)						: Matrix_t				FROM matrix
+ROUTINE matrix_invers(this: Matrix_t)								: Matrix_t				FROM matrix
+
+ROUTINE lu_solve(a: Matrix_t; b: Matrix_t)							: Matrix_t				FROM ludecomp -- A*X=B
+ROUTINE lu_new(m: Matrix_t)									: LU_t					FROM ludecomp
+ROUTINE lu_determinant(lu: LU_t)								: REAL					FROM ludecomp
+ROUTINE lu_lowerTriangular_factor(lu: LU_t; ret: Matrix_t)					  					FROM ludecomp
+ROUTINE lu_upperTriangular_factor(lu: LU_t; ret: Matrix_t)										FROM ludecomp

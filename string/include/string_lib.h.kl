@@ -1,0 +1,20 @@
+-----------------------------------------------------------------------------------
+--! @file strlib.header
+--! @brief The Headerfile to the strlib
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+ROUTINE split_str(str:STRING; del:STRING; res:ARRAY[*] OF STRING)	   FROM string_lib
+ROUTINE lstrip(s : STRING)                	       	  	  : STRING FROM string_lib
+ROUTINE rstrip(s : STRING)                			  : STRING FROM string_lib
+ROUTINE strip(s : STRING)                 			  : STRING FROM string_lib
+ROUTINE bool2str(b : BOOLEAN)             			  : STRING FROM string_lib
+ROUTINE int2str(i : INTEGER)              			  : STRING FROM string_lib
+ROUTINE str2int(s : STRING)                       : INTEGER FROM string_lib
+ROUTINE real2str(r : REAL)                			  : STRING FROM string_lib
+ROUTINE pose2str(p : XYZWPR)              			  : STRING FROM string_lib
+ROUTINE esc_quotes(s : STRING)            			  : STRING FROM string_lib
+ROUTINE str2pose(str:STRING; del:STRING; pose: XYZWPR)              	   FROM string_lib
+ROUTINE toupper(str:STRING)                    			  : STRING FROM string_lib
+ROUTINE tolower(str:STRING)               			  : STRING FROM string_lib

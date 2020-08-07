@@ -1,0 +1,16 @@
+-----------------------------------------------------------------------------------
+--! @file logic.header
+--! @brief The logic KAREL lib header
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+ROUTINE xor_b(x : BOOLEAN ; y : BOOLEAN) : BOOLEAN FROM logic_lib
+
+ROUTINE xor  (x: INTEGER; y: INTEGER)	 : INTEGER FROM logic_lib
+ROUTINE nand (x: INTEGER; y: INTEGER)	 : INTEGER FROM logic_lib
+ROUTINE nor  (x: INTEGER; y: INTEGER)	 : INTEGER FROM logic_lib
+ROUTINE band (x: INTEGER; y: INTEGER)	 : BOOLEAN FROM logic_lib
+ROUTINE bandi(x: INTEGER; y: INTEGER)	 : INTEGER FROM logic_lib
+ROUTINE ldsum(x: INTEGER; y: INTEGER)	 : BOOLEAN FROM logic_lib
+ROUTINE ldsumi(x: INTEGER; y: INTEGER) 	 : INTEGER FROM logic_lib

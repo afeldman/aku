@@ -1,0 +1,139 @@
+PROGRAM byte_lib
+
+%ALPHABETIZE
+%COMMENT = 'byte lib'
+%NOBUSYLAMP
+%NOLOCKGROUP
+%NOPAUSE = COMMAND + TPENABLE + ERROR
+
+%INCLUDE include/const/math.c
+%INCLUDE include/const/byte.c
+
+%INCLUDE include/type/byte.t
+
+%INCLUDE include/byte.h
+%INCLUDE include/math.h
+%INCLUDE include/logic.h
+
+BEGIN
+END byte_lib
+
+
+ROUTINE byte_init
+VAR
+	byte_m : byte_t
+BEGIN
+	byte_m.byte_ = 0
+	RETURN(byte_m)	
+END byte_init
+
+ROUTINE byte_array_init
+VAR
+	i: INTEGER
+BEGIN
+	FOR i = 1 TO ARRAY_LEN(out) DO
+	    out[i]= byte_init
+	ENDFOR
+END byte_array_init
+
+ROUTINE lshift
+BEGIN
+	RETURN(item * pow2(steps))
+END lshift
+
+
+ROUTINE rshift
+BEGIN
+	RETURN(item DIV (floor(pow2(steps))))
+END rshift
+
+ROUTINE shl
+BEGIN
+	RETURN(lshift (item, steps))
+END shl
+
+ROUTINE shr
+BEGIN
+	RETURN(rshift(item, steps))
+END shr
+
+ROUTINE low_16bit
+BEGIN
+	RETURN (item AND bx0000FFFF)
+END low_16bit
+
+ROUTINE high_16bit
+BEGIN
+	RETURN (item AND bxFFFF0000)
+END high_16bit
+
+ROUTINE i2byte
+VAR
+	res: ARRAY[4] of byte_t
+BEGIN
+
+	res[1].byte_ = shr(item AND bxFF000000, 24)
+	res[2].byte_ = shr(item AND bx00FF0000, 16)
+	res[3].byte_ = shr(item AND bx0000FF00,  8)
+	res[4].byte_ =     item AND bx000000FF
+
+	RETURN (res)
+END i2byte
+
+ROUTINE byte2i
+VAR
+ tmp_m, res: INTEGER
+BEGIN
+	tmp_m = item[1].byte_
+	res = shl(tmp_m, 24)
+	tmp_m = item[2].byte_
+	res = res OR shl(tmp_m AND bx000000FF, 16)
+	tmp_m = item[3].byte_
+	res = res OR shl(tmp_m AND bx000000FF, 8)
+	tmp_m = item[4].byte_
+	res = res OR (item[4].byte_ AND bx000000FF)
+
+	RETURN(res)
+END byte2i
+
+ROUTINE s2byte
+VAR
+	k,i,start : INTEGER
+BEGIN
+    k = 1
+
+    -- initialize the whole out array to 0
+    FOR i = 1 TO ARRAY_LEN(out) DO
+      out[i].byte_ = 0
+    ENDFOR
+
+    FOR i = 1 TO STR_LEN(item) DO
+    	out[k].byte_ = ORD(item,i) -- get ORD from char
+    ENDFOR
+
+END s2byte
+
+ROUTINE r2byte
+VAR
+	res: ARRAY[10] of byte_t
+	tmp_m : STRING[10]
+BEGIN
+	CNV_REAL_STR(item,10,3,tmp_m)
+
+	s2byte(tmp_m, res)
+
+	RETURN (res)
+END r2byte
+
+ROUTINE b2byte
+VAR
+	res : byte_t
+BEGIN
+	IF item THEN
+	   res.byte_ = 1
+	ELSE
+	   res.byte_ = 0
+	ENDIF
+
+	RETURN (res)
+END b2byte

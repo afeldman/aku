@@ -1,0 +1,4 @@
+ROUTINE lcg( seed : INTEGER )	: INTEGER 	FROM random
+ROUTINE rand(seed : INTEGER) 	: REAL		FROM random
+ROUTINE slcg 				  	: INTEGER 	FROM random
+ROUTINE srand					: REAL		FROM random

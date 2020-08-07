@@ -1,0 +1,279 @@
+-----------------------------------------------------------------------------------
+--! @file string_lib
+--! @brief A library to work with strings 
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+
+--! @brief the string lib
+PROGRAM string_lib
+
+--! no motion group
+%ALPHABETIZE
+%NOBUSYLAMP 
+%NOLOCKGROUP 
+%NOPAUSE = COMMAND + TPENABLE + ERROR 
+
+%INCLUDE include/string_lib.h
+  
+%INCLUDE klrdutil -- int_to_strg
+  
+--! @brief start of program
+BEGIN
+--! @end program
+END string_lib
+
+--! @brief split a given string into the parts given a delemiter and puts it into an string array
+--
+--! @param  str	: STRING  - the given string
+--! @param  del : STRING  - the string delimiter
+--! @return res	: ARRAY[16] OF STRING
+--
+--! <h1>Example:</h1>
+--
+--! split_str('this is a string','s')  => ['thi',' i',' a ', 'tring']
+ROUTINE split_str
+  VAR
+    tmp : STRING[254]
+    i   : INTEGER
+    j   : INTEGER
+  BEGIN
+    j = 1
+    tmp = ''
+
+    -- initialize empty string array
+    FOR i = 1 TO ARRAY_LEN(res) DO
+      res[i] = ''
+    ENDFOR
+
+    FOR i = 1 TO STR_LEN(str) DO
+      IF (i = STR_LEN(str)) AND (SUB_STR(str,i,1) <> del) THEN
+        tmp = tmp + SUB_STR(str,i,1)
+      ENDIF
+
+      IF (SUB_STR(str,i,1) = del) OR (i = STR_LEN(str)) THEN
+        res[j] = tmp
+        j = j + 1
+        tmp = ''
+      ELSE
+        tmp = tmp + SUB_STR(str,i,1)
+      ENDIF
+    ENDFOR
+  END split_str
+
+
+--! @brief delete whitespace on the left side of a given string
+--! @param 	s: STRING
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = lstrip(" this is a string with a left whitespace")
+--
+ROUTINE lstrip
+  VAR
+    i : INTEGER
+  BEGIN
+    FOR i = 1 TO STR_LEN(s) DO
+      IF SUB_STR(s,i,1) <> ' ' THEN
+        RETURN(SUB_STR(s,i,STR_LEN(s)))
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END lstrip
+
+
+--! @brief delete whitespace on the right side of a given string
+--! @param 	s: STRING
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = rstrip("this is a string with a right whitespace ")
+ROUTINE rstrip
+  VAR
+    i : INTEGER
+  BEGIN
+    FOR i = STR_LEN(s) DOWNTO 1 DO
+      IF SUB_STR(s,i,1) <> ' ' THEN
+        RETURN(SUB_STR(s,1,i))
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END rstrip
+
+--! @brief delete whitespace on the right and the left side of a given string
+--! @param 	s: STRING
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = rstrip(" this is a string with a right and a left whitespace ")
+ROUTINE strip
+  BEGIN
+	s = lstrip(s)
+	s = rstrip(s)
+	RETURN(s)
+  END strip
+ 
+--! @brief convert a boolean value to string
+--! @param 	b : BOOLEAN
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = bool2str(true)
+ROUTINE bool2str
+  BEGIN
+    IF b THEN
+      RETURN('true')
+    ELSE
+      RETURN('false')
+    ENDIF
+  END bool2str
+
+--! @brief convert a integer value to string
+--! @param 	i : INTEGER
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = int2str(6)
+ROUTINE int2str
+BEGIN
+    RETURN(int_to_strg(i))
+END int2str
+
+--! @brief convert a integer value to string
+--! @param 	i : INTEGER
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = str2int('6')
+ROUTINE str2int
+BEGIN
+    RETURN(strg_to_int(s))
+END int2str
+
+--! @brief convert a REAL value to string
+--! @param 	i : REAL
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = real2str(6.7)
+ROUTINE real2str
+  VAR
+    s : STRING[16]
+    i : INTEGER
+  BEGIN
+    IF UNINIT(r) THEN
+      RETURN('null')
+    ENDIF
+
+    CNV_REAL_STR(r, 0, 3, s)
+    s = lstrip(s)
+
+    -- watchout for negative number
+    IF SUB_STR(s,1,1) = '-' THEN
+      -- see if next char is a point .
+      IF SUB_STR(s,2,1) = '.' THEN
+        s = '-0.' + SUB_STR(s,3,STR_LEN(s))
+      ENDIF
+    ENDIF
+
+    -- add leading zero
+    IF SUB_STR(s,1,1) = '.' THEN
+      s = '0' + s
+    ENDIF
+
+    -- get rid of trailing zeroes
+    FOR i = STR_LEN(s) DOWNTO 1 DO
+      IF SUB_STR(s,i,1) <> '0' THEN
+        -- see if prev char is a . so we leave 1 trailing zero
+        IF SUB_STR(s,i,1) = '.' THEN
+          RETURN(SUB_STR(s,1,i+1))
+        ELSE
+          RETURN(SUB_STR(s,1,i))
+        ENDIF
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END real2str
+
+--! @brief convert a POSE value to string
+--! @param 	p : XYZWPR
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = pose2str(robot_pose)
+ROUTINE pose2str
+  BEGIN
+    RETURN('X: ' + real2str(p.x) + ' Y: ' + real2str(p.y) + ' Z: ' + real2str(p.z) + chr(13) &
+      + 'W: ' + real2str(p.w) + ' P: ' + real2str(p.p) + ' R: ' + real2str(p.r))
+   END pose2str
+
+
+--! @brief escape quotes in a given string
+--! @param 	s : STRING
+--! @return STRING
+--
+--! <h1>Example:</h1>
+--! str = esc_quotes("This s a String with \"quots\"")
+ROUTINE esc_quotes
+  VAR
+    i : INTEGER
+    r : STRING[254]
+    c : STRING[1]
+  BEGIN
+    r = ''
+    FOR i=1 TO STR_LEN(s) DO
+      -- chr(44) is '
+      c = SUB_STR(s,i,1)
+      IF (c = chr(44)) OR (c = '"') THEN
+        r = r + '\'
+      ENDIF
+
+      r = r + c
+    ENDFOR
+
+    RETURN(r)
+  END esc_quotes
+  
+ROUTINE str2pose
+VAR
+	pos : ARRAY[6] OF STRING[10]
+BEGIN
+	split_str(str, del, pos)
+
+	CNV_STR_REAL(pos[1],pose.x)
+	CNV_STR_REAL(pos[2],pose.y)
+	CNV_STR_REAL(pos[3],pose.z)
+	CNV_STR_REAL(pos[4],pose.w)
+	CNV_STR_REAL(pos[5],pose.p)
+	CNV_STR_REAL(pos[6],pose.r)	
+END str2pose
+
+ROUTINE toupper
+BEGIN
+    result = ''
+    FOR idx = 1 TO STR_LEN(str) DO
+        IF ((ORD(str,idx) > 96) AND (ORD(str,idx) < 123)) THEN
+            result = result +  CHR(ORD(str,idx) - 32)
+        ELSE
+            result =  result + SUB_STR(str,idx,1)
+        ENDIF
+    ENDFOR
+    RETURN (result)
+END toupper
+
+ROUTINE tolower
+BEGIN
+	result = ''
+    FOR idx = 1 TO STR_LEN(str) DO
+        IF ((ORD(str,idx) > 64) AND (ORD(str,idx) < 91)) THEN
+            result = result +  CHR(ORD(str,idx) + 32)
+        ELSE
+            result =  result + SUB_STR(str,idx,1)
+        ENDIF
+    ENDFOR
+    RETURN (result)
+END str2pose

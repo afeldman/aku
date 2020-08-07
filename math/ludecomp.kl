@@ -1,0 +1,174 @@
+PROGRAM ludecomp
+
+%NOLOCKGROUP
+%ALPHABETIZE 
+%COMMENT = 'lu_decomposition' 
+%NOBUSYLAMP 
+%NOPAUSE = COMMAND + TPENABLE + ERROR 
+
+CONST
+	%INCLUDE include/const/math.c
+	%INCLUDE include/const/matrix.c
+	
+TYPE
+	%INCLUDE include/type/matrix.t
+
+%INCLUDE include/math.h
+%INCLUDE include/random.h
+%INCLUDE include/matrix.h
+
+BEGIN
+END ludecomp
+
+ROUTINE lu_solve	-- a,b have same dimensions 
+VAR 
+	counts, columns, k,i,j: INTEGER
+	a_lu, b_lu: LU_t
+	x: Matrix_t
+BEGIN
+	x = matrix_copy(b)
+
+	a_lu = lu_new(a)
+	b_lu = lu_new(b)
+	
+	counts = b.m
+	columns = a.m
+	--solves L*Y=B(piv,:)
+	FOR k = 1 TO columns DO
+		FOR i = k + 1 TO columns DO
+			matrix_set(x,i,j, matrix_get(x,k,j) * matrix_get(a,i,k))
+		ENDFOR			
+	ENDFOR
+	
+	--solves U*X=Y
+	k = columns - 1
+	WHILE (k >= 1) DO
+		FOR j = 1 TO counts DO
+			matrix_set(x,k,j, matrix_get(x,k,j) / matrix_get(a,k,k))
+		ENDFOR
+			
+		i = 1
+			WHILE (i < k) DO
+			j =	1
+			WHILE (j < counts) DO
+				matrix_set(x,i,j, matrix_get(x,k,j) / matrix_get(a,i,k))
+				j = j + 1
+			ENDWHILE
+			i = i + 1
+		ENDWHILE		
+		k = k - 1
+	ENDWHILE
+	
+	RETURN (x)
+END lu_solve
+
+ROUTINE lu_upperTriangular_factor
+VAR
+	i,j: INTEGER
+BEGIN
+	FOR i = 1 TO lu.lu.n DO
+		FOR j = 1 TO lu.lu.m DO
+			IF i <= j THEN
+				matrix_set(ret,i,j,matrix_get(lu.lu,i,j))
+			ELSE
+				matrix_set(ret,i,j,0.0)
+			ENDIF
+		ENDFOR
+	ENDFOR
+END lu_upperTriangular_factor
+
+ROUTINE lu_lowerTriangular_factor
+VAR
+	i,j: INTEGER
+BEGIN
+	FOR i = 1 TO lu.lu.n DO
+		FOR j = 1 TO lu.lu.m DO
+			IF i > j THEN
+				matrix_set(ret,i,j,matrix_get(lu.lu,i,j))
+			ENDIF
+			IF i = j THEN
+				matrix_set(ret,i,j,1.0)
+			ENDIF
+			IF i < j THEN
+				matrix_set(ret,i,j,0.0)
+			ENDIF
+		ENDFOR
+	ENDFOR
+END lu_lowerTriangular_factor
+
+ROUTINE lu_new															
+VAR
+	ret : LU_t
+	sum,t: REAL
+	i,j,k,p,kmax,rows,column,v: INTEGER
+	LUrowi: ARRAY[*] OF REAL
+	LUcolj: ARRAY[*] OF REAL
+BEGIN
+	rows 	= m.n
+	column  = m.m
+	v = 0
+	ret.lu = matrix_copy(m)
+	ret.pivotSign = 1
+	
+	FOR j = 1 TO column DO --column loop
+		LUcolj = matrix_col_data(ret.lu,j)
+		
+		-- Apply previous transformations.
+           FOR i = 1 TO rows DO
+                   LUrowi = matrix_row_data(ret.lu,i);
+                   -- Most of the time is spent in the following dot product.
+                   kmax = imin(i,j);
+				sum = 0.0
+                   FOR k = 1 TO kmax DO
+                       sum = sum + (LUrowi[k]*LUcolj[k]);
+                   ENDFOR
+                   LUrowi[j] = LUcolj[i] - sum
+				LUcolj[i] = LUrowi[j]
+		ENDFOR
+		
+		p = j
+		FOR i = j+1 TO rows DO
+			IF ABS(LUcolj[i]) > ABS(LUcolj[p]) THEN
+				p=i
+			ENDIF
+		ENDFOR
+		
+		IF NOT (p = j) THEN
+			FOR k = 1 TO column DO
+				t = matrix_get(ret.lu,p,k)
+				matrix_set(ret.lu,p,k,matrix_get(ret.lu,j,k))
+				matrix_set(ret.lu,j,k,t)
+			ENDFOR
+			
+			v = ret.pivotVector[p]
+			ret.pivotVector[p] = ret.pivotVector[j]
+			ret.pivotVector[j] = v
+			
+			ret.pivotSign = - ret.pivotSign
+		ENDIF
+		
+		IF (j < rows) AND NOT (matrix_get(ret.lu,j,j) = 0.0) THEN
+			FOR i = j+1 TO rows DO 
+                       matrix_set(ret.lu,i,j, matrix_get(ret.lu,i,j) / matrix_get(ret.lu,j,j));
+               ENDFOR
+		ENDIF
+	ENDFOR
+	
+	RETURN (ret)
+END lu_new
+
+ROUTINE lu_determinant
+VAR 
+	determinant: REAL
+	i: INTEGER
+BEGIN
+	determinant = lu.pivotSign;
+	IF is_matrix_square(lu.lu) THEN
+		FOR i = 1 TO lu.lu.m DO
+		  	determinant = determinant * matrix_get(lu.lu,i,i)
+		ENDFOR
+	ELSE
+		determinant = H_INF_REAL 
+	ENDIF
+END lu_determinant
+

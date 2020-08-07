@@ -1,0 +1,4 @@
+
+Gravity_t FROM gravity = STRUCTURE
+	  grav = Vector_t
+ENDSTRUCTURE

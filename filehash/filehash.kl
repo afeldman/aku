@@ -1,0 +1,74 @@
+PROGRAM filehash
+
+%ALPHABETIZE
+%COMMENT = 'file hash libs'
+%NOBUSYLAMP
+%NOLOCKGROUP
+%NOPAUSE = COMMAND + TPENABLE + ERROR
+
+CONST
+        %INCLUDE include/filehash/filehash.c
+
+TYPE
+        %INCLUDE include/filehash/filehash.t
+
+%INCLUDE include/logic.h
+%INCLUDE include/filehash/filehash.h
+
+BEGIN
+END filehash
+
+ROUTINE xorhash
+VAR
+     hashfile  : FILE
+
+     chunk     : ARRAY[ChunkSize] OF BYTE
+     chunk_s   : STRING[1]
+     chunk_byte: ARRAY[HASHSIZE] OF BYTE
+
+     status    : INTEGER
+
+     idx, jdx  : INTEGER
+
+     hash_t    : FILEHASH_T
+BEGIN
+      -- we need binary mode (UnFormatted)
+      SET_FILE_ATR(hashfile, ATR_UF)
+      SET_FILE_ATR(hashfile, ATR_BUFSIZE, CHUNKSIZE)
+
+      OPEN FILE hashfile ('RO', filename )
+      FOR idx = 1 TO CHUNKSIZE  DO
+      	READ input_f (chunk_s::1)
+	status = IO_STATUS(hashfile)
+      	IF status <> 0 THEN
+	   WRITE ('ERROR: ', status, cr)
+           chunk_s = ORD(CHR(0),1)
+	ELSE
+	   chunk[idx] = ORD(chunk_s,1)
+	ENDIF
+      ENDFOR
+      CLOSE FILE hashfile
+
+      jdx = 1
+      FOR idx = 1 TO CHUNKSIZE DO
+          IF (idx MOD HASHSIZE) = 0 THEN
+            jdx = (jdx + 1) MOD HASHSIZE
+            IF jdx = 0 THEN; jdx = 1; ENDIF
+          ENDIF
+
+          ri = chunk_byte[jdx]
+          le = chunk[idx]
+          le = xor(ri,le)
+
+          chunk_byte[jdx] = le
+      ENDFOR
+
+      hash_t.name = filename
+
+      FOR idx = 1 TO HASHSIZE DO
+          hash_t.hash = chunk_byte[idx]
+      ENDFOR
+
+      RETURN(hash_t)
+
+END xorhash

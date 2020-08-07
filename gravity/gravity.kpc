@@ -1,0 +1,17 @@
+name: "kl_gravity"
+discription: "Set and Get the Gravity information of the robot controller"
+version: "0.1.1"
+url: "https://github.com/afeldman/kl_gravity"
+source: {url:"https://github.com/afeldman/kl_gravity.git", type:"git", version:"master"}
+requirements: ["kl_math"]
+conflicts: null
+author: [{name:"anton feldmann",email: "<anton.feldmann@gmail.com>"}]
+prefix: "/usr/local/"
+srcdir: "."
+typedir: ["include/type"]
+constdir: [""]
+includedir: ["include/"]
+lib: ["string_lib.kl"]
+types: [""]
+consts: [""]
+includes: ["gravity.h.kl"]

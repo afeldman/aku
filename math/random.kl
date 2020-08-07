@@ -1,0 +1,74 @@
+PROGRAM random
+
+%NOLOCKGROUP
+%ALPHABETIZE 
+%COMMENT = 'random' 
+%NOBUSYLAMP 
+%NOPAUSE = COMMAND + TPENABLE + ERROR 
+
+CONST
+	%INCLUDE include/const/random.c
+
+%INCLUDE include/random.h
+
+BEGIN
+END random
+
+ROUTINE rand
+BEGIN
+   seed = (seed * RANDOM_MULTIPLIER + RANDOM_INCREMENT) MOD RANDOM_MODULUS
+   RETURN(seed/65535.0)
+END rand
+
+ROUTINE srand
+VAR
+   seed        : INTEGER 
+   start_time  : INTEGER
+   status    	: INTEGER
+BEGIN
+   GET_VAR(seed, '*system*', '$fast_clock', start_time, status)
+
+   RETURN(rand(seed))
+END srand
+
+
+--<! linear congruential generator
+ROUTINE lcg
+VAR
+   incrementer	: INTEGER
+   modulus	: INTEGER
+   multiplier	: INTEGER
+   res		: INTEGER
+BEGIN
+  
+   modulus 	= 	2147483647
+   multiplier 	= 	1664525
+   incrementer	=	1013904223
+  
+   res = ( multiplier * seed + incrementer) MOD modulus
+	
+   RETURN(res)
+END lcg
+
+--<! linear congruential generator
+ROUTINE slcg
+VAR
+   incrementer : INTEGER
+   modulus     : INTEGER
+   multiplier  : INTEGER
+   res	       : INTEGER
+   seed        : INTEGER 
+   start_time  : INTEGER
+   status      : INTEGER
+BEGIN
+    GET_VAR(seed, '*system*', '$fast_clock', start_time, status)
+  
+	modulus 	= 	2147483647
+	multiplier 	= 	1664525
+	incrementer	=	1013904223
+  
+	res = ( multiplier * seed + incrementer) MOD modulus
+	
+	RETURN(res)
+
+END slcg

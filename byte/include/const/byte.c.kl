@@ -1,0 +1,19 @@
+CONST
+	bx000000FF =        255 -- byte
+	bx00000FFF = 	   4095
+	bx0000FF00 =      65280 
+	bx0000FFFF =      65535 -- 2 byte
+	bx000FFFFF =    1048575   
+	bx00FF0000 =   16711680 
+	bx00FF00FF =   16711935 
+	bx00FFFF00 =   16776960 
+	bx00FFFFFF =   16777215 -- 3 byte 
+	bx0FFFFFFF =  268435455 -- max
+	bxFF000000 =  -16777216
+	bxFF0000FF =  -16776961
+	bxFF00FF00 =  -16711936
+	bxFF00FFFF =  -16711681 
+	bxFFFF0000 =     -65536
+	bxFFFF00FF =     -65281
+	bxFFFFFF00 =       -256
+	bxFFFFFFFF =         -1 -- 4 byte

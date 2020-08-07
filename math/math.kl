@@ -1,0 +1,207 @@
+PROGRAM kl_math
+
+%NOLOCKGROUP
+%ALPHABETIZE 
+%COMMENT = 'math lib' 
+%NOBUSYLAMP 
+%NOPAUSE = COMMAND + TPENABLE + ERROR 
+
+--static routines
+CONST
+	%INCLUDE include/const/math.c
+
+%INCLUDE include/math.h
+
+BEGIN
+END kl_math
+
+ROUTINE m_pi
+BEGIN 
+	RETURN( 4.0 * ATAN2(1.0,1.0) ) -- after Leibnitz
+END m_pi
+
+ROUTINE d2r
+BEGIN
+	RETURN( m_pi / 180.0 )
+END d2r
+
+ROUTINE r2d
+BEGIN
+	RETURN( 180.0 / m_pi )
+END r2d
+
+-- routines
+
+ROUTINE to_rad
+	BEGIN
+		RETURN (deg * d2r)
+END to_rad
+
+ROUTINE to_deg
+	BEGIN
+		RETURN (rad * r2d)
+END to_deg
+
+ROUTINE factorial
+VAR
+	prod	: REAL
+	ind	: REAL
+	i	: INTEGER
+BEGIN
+    prod = 1.0
+    ind = 1.0
+    
+    FOR i = 1 TO k DO
+        prod = ind * prod
+        ind = ind + 1.0
+    ENDFOR
+	
+    RETURN(prod)
+END factorial
+
+ROUTINE power
+VAR
+	po	: INTEGER
+	i	: INTEGER
+BEGIN
+	po = 1
+    FOR i = 1 TO exponent DO
+        po = po * base
+    ENDFOR
+	
+    RETURN(po)
+END power
+
+ROUTINE pow
+	VAR
+	po	: REAL
+	i	: INTEGER
+BEGIN
+	po = 1.0
+    FOR i = 1 TO exponent DO
+        po = po * base
+    ENDFOR
+	
+    RETURN(po)
+END pow
+
+ROUTINE pow2
+BEGIN
+  RETURN(pow2,exponent)
+END pow2
+
+ROUTINE sq
+BEGIN
+	RETURN( value * value )
+END sq
+
+ROUTINE sum
+VAR
+   sum	: REAL
+   i	: INTEGER
+BEGIN
+   sum = 1.0
+   FOR i = 1 TO count DO
+      sum = sum + su
+   ENDFOR
+	
+   RETURN(sum)
+END sum
+
+ROUTINE min
+	VAR
+		ret: REAL
+		tmp: BOOLEAN
+	BEGIN 
+		IF a <= b THEN
+			ret = a
+		ELSE
+			ret = b
+		ENDIF
+		RETURN(ret)
+END min
+
+ROUTINE max
+	VAR
+		ret: REAL
+		tmp: BOOLEAN
+	BEGIN 
+		IF a >= b THEN
+			ret = a
+		ELSE
+			ret = b
+		ENDIF
+		RETURN(ret)
+END max 
+
+ROUTINE imin
+	VAR
+		ret: INTEGER
+		tmp: BOOLEAN
+	BEGIN 
+		IF a <= b THEN
+			ret = a
+		ELSE
+			ret = b
+		ENDIF
+		RETURN(ret)
+END imin
+
+ROUTINE imax
+	VAR
+		ret: INTEGER
+		tmp: BOOLEAN
+	BEGIN 
+		IF a >= b THEN
+			ret = a
+		ELSE
+			ret = b
+		ENDIF
+		RETURN(ret)
+END imax 
+
+ROUTINE almostEq
+VAR
+   diff	: REAL
+   ret	: BOOLEAN
+BEGIN
+   diff = ABS(a - b);
+
+   IF a = b THEN
+      ret = true
+   ELSE
+      ret = (diff <= epsilon)
+   ENDIF
+   
+   RETURN(ret)
+END almostEq
+
+ROUTINE log
+BEGIN	
+	RETURN (log2(item)/log10_2)
+END log
+
+ROUTINE log2
+BEGIN	
+	RETURN (ln(item)/ln(2))
+END log2
+
+ROUTINE floor
+VAR
+	res : INTEGER
+BEGIN
+	res = ROUND(item)
+	IF res <> 0 THEN
+		IF item < 0 THEN
+		   IF res < item THEN
+	      	      res = res + 1
+	   	   ENDIF
+		 ELSE
+	   	   IF res > item THEN
+	      	      res = res - 1
+	   	   ENDIF
+		 ENDIF
+	ENDIF
+
+	RETURN(res)
+END floor

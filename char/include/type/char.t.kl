@@ -1,0 +1,10 @@
+-----------------------------------------------------------------------------------
+--! @file char.type
+--! @brief The typefile to the char lib
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+char_t from char = STRUCTURE
+	c : STRING[1]
+ENDSTRUCTURE

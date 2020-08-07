@@ -1,0 +1,12 @@
+-----------------------------------------------------------------------------------
+--! @file char.header
+--! @brief The header file to the KAREL char lib
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+ROUTINE int2char(i : INTEGER)		   : char_t		FROM char_lib
+ROUTINE char2int(c : char_t) 	  	   : INTEGER 		FROM char_lib
+ROUTINE str2char(str : STRING) 	  	   : ARRAY[*] of char_t FROM char_lib
+ROUTINE char2str(c : char_t) 	  	   : STRING   	 	FROM char_lib
+ROUTINE achar2str(c : ARRAY[*] of char_t)  : STRING 		FROM char_lib

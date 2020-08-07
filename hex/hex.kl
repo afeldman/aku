@@ -1,0 +1,128 @@
+PROGRAM hex_lib
+
+%ALPHABETIZE
+%COMMENT = 'lib for hex'
+%NOBUSYLAMP
+%NOLOCKGROUP
+%NOPAUSE = COMMAND + TPENABLE + ERROR
+
+%INCLUDE include/math.h
+%INCLUDE include/hex.h
+%INCLUDE include/string.h
+
+BEGIN
+END hex_lib
+
+ROUTINE is_hex
+BEGIN
+        IF ((c > 47) AND (c < 58)) OR
+           ((c > 64) AND (c < 71)) OR
+           ((c > 96) AND (c < 103)) THEN
+           RETURN (true)
+        ELSE
+           RETURN (false)
+        ENDIF
+END is_hex
+
+ROUTINE is_char_hex
+VAR
+        tmp :INTEGER
+BEGIN
+        tmp = ORD(c,1)
+        RETURN is_hex(tmp)
+END is_char_hex
+
+ROUTINE hex2dec
+VAR
+        i: INTEGER
+        j :INTEGER
+        tmp :INTEGER
+        res :INTEGER
+BEGIN
+        IF  STR_LEN(num) > 10 THEN
+            RETURN (-1)
+        ENDIF
+
+        j = 0
+
+-- start with 0x
+        FOR i = 10 DOWNTO 3 DO
+            SELECT (ORD(num,i)) OF
+            CASE(48):
+                tmp = 0
+            CASE(49):
+                tmp = 1
+            CASE(50):
+                tmp = 2
+            CASE(51):
+                tmp = 3
+            CASE(52):
+                tmp = 4
+            CASE(53):
+                tmp = 5
+            CASE(54):
+                tmp = 6
+            CASE(55):
+                tmp = 7
+            CASE(56):
+                tmp = 8
+            CASE(59):
+                tmp = 9
+            CASE(65,97):
+                tmp = 10
+            CASE(66,98):
+                tmp = 11
+            CASE(67,99):
+                tmp = 12
+            CASE(68,100):
+                tmp = 13
+            CASE(67,101):
+                tmp = 14
+            CASE(68,102):
+                tmp = 15
+            ENDSELECT
+            res = res + (tmp * power(16,j))
+            j = j + 1
+        ENDFOR
+
+        RETURN (res)
+END dex2dec
+
+ROUTINE dec2hex
+VAR
+        tmp: STRING[10]
+        hex_tmp: INTEGER
+        i: INTEGER
+BEGIN
+
+        tmp[1]='0'
+        tmp[2]='x'
+        i = 2
+
+        REPEAT
+                i = i + 1
+                hex_tmp = num MOD 16
+
+                SELECT (hex_tmp) OF
+                CASE (10):
+                        tmp[i] = 'A'
+                CASE (11):
+                        tmp[i] = 'B'
+                CASE (12):
+                        tmp[i] = 'C'
+                CASE (13):
+                        tmp[i] = 'D'
+                CASE (14):
+                        tmp[i] = 'E'
+                CASE (15):
+                        tmp[i] = 'F'
+                ELSE:
+                        tmp[i] = int2str(hex_tmp)
+                ENDSELECT
+
+                num = floor(num / 16)
+
+        UNTIL (num < 0)
+
+        RETURN(tmp)
+END dec2hex

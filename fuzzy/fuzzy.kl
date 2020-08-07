@@ -1,0 +1,70 @@
+PROGRAM fuzzy_lib
+
+%ALPHABETIZE
+%COMMENT = 'lib for fuzzy logik'
+%NOBUSYLAMP
+%NOLOCKGROUP
+%NOPAUSE = COMMAND + TPENABLE + ERROR
+
+%INCLUDE include/fuzzy.h
+
+BEGIN
+END fuzzy_lib
+
+ROUTINE fuzzy_not
+BEGIN
+        IF ((num < 0.0) OR (num > 1.0)) THEN
+           RETURN (-1.0)
+        ELSE
+           RETURN (1.0 - num)
+        ENDIF
+
+END fuzzy_not
+
+ROUTINE fuzzy_or
+BEGIN
+        IF ((left < 0.0) OR (left > 1.0) OR
+            (right < 0.0) OR (right > 1.0)) THEN
+           RETURN (-1.0)
+        ELSE
+           IF (left > right) THEN
+              RETURN (left)
+           ELSE
+              RETURN (right)
+           ENDIF
+        ENDIF
+END fuzzy_or
+
+ROUTINE fuzzy_and
+BEGIN
+        IF ((left < 0.0) OR (left > 1.0) OR
+            (right < 0.0) OR (right > 1.0)) THEN
+           RETURN (-1.0)
+        ELSE
+           IF (left < right) THEN
+              RETURN (left)
+           ELSE
+              RETURN (right)
+           ENDIF
+        ENDIF
+END fuzzy_and
+
+ROUTINE fuzzy_xor
+BEGIN
+        IF ((left < 0.0) OR (left > 1.0) OR
+            (right < 0.0) OR (right > 1.0)) THEN
+           RETURN (-1.0)
+        ELSE
+           IF ((left > right) AND (left < fuzzy_not(right))) THEN
+              RETURN (left)
+           ELSE IF ((left > right) AND (left >= fuzzy_not(right))) THEN
+                   RETURN (fuzzy_not(right))
+                ELSE IF ((right >= left) AND (right < fuzzy_not(right))) THEN
+                        RETURN (right)
+                     ELSE
+                        RETURN (fuzzy_not(left))
+                     ENDIF
+                ENDIF
+           ENDIF
+        ENDIF
+END fuzzy_xor

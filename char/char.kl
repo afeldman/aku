@@ -1,0 +1,130 @@
+-----------------------------------------------------------------------------------
+--! @file char_lib
+--! @brief The functions for the char lib
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+--! @brief start the char lib functions
+PROGRAM char_lib
+--! not a moveing group
+%NOLOCKGROUP
+%ALPHABETIZE 
+%COMMENT = 'char lib' 
+%NOBUSYLAMP 
+%NOPAUSE = COMMAND + TPENABLE + ERROR
+
+TYPE
+--! include the char type structure
+	%INCLUDE include/type/char.t
+
+%INCLUDE include/char.h
+
+--! end routines
+BEGIN	
+--! end char lib
+END char_lib
+	
+--! @brief integer to char
+--
+--! @detail give a integer and get a char from the ascii table
+--! @param integer
+--! @return char_t
+--
+--! <h1>Examples</h1>
+--
+--! int2char(70) => F
+ROUTINE int2char
+VAR
+  c : char_t
+BEGIN
+	IF (i <= 0) OR (i > 254) OR (UNINIT(i)) THEN 	--! char is defined by a number between 0 and 254
+		c.c = CHR(0)								--! return NULL
+	ELSE
+		c.c = CHR(i)								--! return the char in ascii table
+	ENDIF
+	RETURN(c)
+END int2char
+
+--! @brief char to integer
+--
+--! @detail give a char and get the specific integer from the ascii table
+--! @param 	char_t
+--! @return integer
+--
+--! <h1>Examples</h1>
+--
+--! char2int('F') => 70	
+ROUTINE char2int
+BEGIN
+	RETURN(ORD(c.c,1)) --! return the position in the ascii table
+END char2int	
+	
+--! @brief a string is broken down to the seperate char array
+--
+--! @detail brake the string into single chars
+--
+--! @param 	string
+--! @return char[]
+--
+--! <h1>Examples</h1>
+--
+--! str2char("FANUC") => {'F','A','N','U','C'}	
+ROUTINE str2char
+VAR
+	i   : INTEGER
+	tmp	: char_t
+	res : ARRAY[254] OF char_t
+BEGIN
+	-- initialize empty string array
+	FOR i = 1 TO STR_LEN(str) DO   	--! inizialize char array
+		res[i].c = ''
+	ENDFOR
+
+	FOR i = 1 TO STR_LEN(str) DO 	--! set string to char array
+		tmp.c = SUB_STR(str,i,1) 
+		res[i] = tmp
+	ENDFOR
+	
+	RETURN(res)
+END str2char	
+
+--! @brief parse a char to string
+--
+--! @detail convert a char to string
+--
+--! @param 	char
+--! @return string
+--
+--! <h1>Examples</h1>
+--
+--! char2str('F') => "F"		
+ROUTINE char2str
+VAR
+	res : STRING[1]
+BEGIN
+	res = c.c
+	RETURN(res)
+END char2str	
+	
+--! @brief parse a char array to string
+--
+--! @detail convert a char array to string
+--
+--! @param 	char[]
+--! @return string
+--
+--! <h1>Examples</h1>
+--
+--! achar2str({'F','A','N','U','C'}) => "FANUC"
+ROUTINE achar2str
+VAR
+	res : STRING[254]
+	i   : INTEGER
+BEGIN
+	FOR i = 1 TO ARRAY_LEN(c) DO	--! add the char into the string
+		res = res + c[i].c
+	ENDFOR
+
+	RETURN(res)
+END achar2str	

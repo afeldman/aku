@@ -1,0 +1,10 @@
+-----------------------------------------------------------------------------------
+--! @file gravity.header
+--! @brief The Headerfile to the gravity lib
+--
+--! @author anton feldmann
+-----------------------------------------------------------------------------------
+
+ROUTINE gravity_new					: Gravity_t FROM gravity
+ROUTINE get_gravity(idx: INTEGER)			: Gravity_t FROM gravity
+ROUTINE set_gravity(this: Gravity_y, idx: INTEGER)	: Gravity_t FROM gravity

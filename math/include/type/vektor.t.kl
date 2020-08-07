@@ -1,0 +1,5 @@
+Vektor_t FROM vektor = STRUCTURE 
+	data    : ARRAY[VEKTOR_SIZE] OF REAL
+	size	: INTEGER
+	column	: BOOLEAN
+ENDSTRUCTURE 

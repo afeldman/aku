@@ -1,0 +1,17 @@
+name: "kl_byte"
+discription: "byte manipulation lib"
+version: "0.1.1"
+url: "https://github.com/afeldman/kl_byte"
+source: {url:"https://github.com/afeldman/kl_byte.git", type:"git", version:"master"}
+requirements: ["kl_math","kl_logic"]
+conflicts: null
+author: [{name:"anton feldmann",email: "<anton.feldmann@gmail.com>"}]
+prefix: "/usr/local/"
+srcdir: "."
+typedir: ["include/type"]
+constdir: ["include/const"]
+includedir: ["include/"]
+lib: "byte.kl"
+types: "byte.t.kl"
+consts: "byte.c.kl"
+includes: ["byte.h.kl"]

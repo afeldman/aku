@@ -1,0 +1,5 @@
+ROUTINE is_hex(c :Integer)         : BOOLEAN FROM hex_lib
+ROUTINE is_char_hex(c :STRING[1])  : BOOLEAN FROM hex_lib
+
+ROUTINE dec2hex(num: INTEGER)      : STRING  FROM hex_lib
+ROUTINE hex2dec(num: STRING)       : INTEGER FROM hex_lib

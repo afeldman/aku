@@ -1,0 +1,11 @@
+Matrix_t FROM matrix = STRUCTURE 
+	data    : ARRAY[MATRIX_ROW, MATRIX_COL] OF REAL
+	n		: INTEGER
+	m		: INTEGER
+ENDSTRUCTURE 
+
+LU_t FROM lu_decomposition = STRUCTURE 
+	lu    		: Matrix_t
+	pivotSign	: INTEGER
+	pivotVector : ARRAY[MATRIX_ROW] OF INTEGER
+ENDSTRUCTURE 

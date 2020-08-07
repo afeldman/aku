@@ -1,0 +1,4 @@
+ROUTINE fuzzy_not(num: REAL)               : REAL FROM fuzzy_lib
+ROUTINE fuzzy_and(left: REAL; right: REAL) : REAL FROM fuzzy_lib
+ROUTINE fuzzy_or(left: REAL; right: REAL)  : REAL FROM fuzzy_lib
+ROUTINE fuzzy_xor(left: REAL; right: REAL) : REAL FROM fuzzy_lib

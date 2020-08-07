@@ -1,0 +1,2 @@
+ROUTINE get_day		: INTEGER FROM time_lib
+ROUTINE get_time	: STRING  FROM time_lib

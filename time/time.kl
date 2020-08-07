@@ -1,0 +1,36 @@
+PROGRAM time_lib
+
+%ALPHABETIZE
+%COMMENT = 'time lib'
+%NOBUSYLAMP
+%NOLOCKGROUP
+%NOPAUSE = COMMAND + TPENABLE + ERROR
+
+%INCLUDE include/time.h
+
+BEGIN
+END time_lib
+
+ROUTINE get_time
+VAR
+	time_m : INTEGER
+	tmp_m  : STRING[30]
+BEGIN
+
+	GET_TIME(time_m)
+
+	time_m = time_m AND 65535 -- keep the lower 16 bits
+
+	CNV_INT_STR(time_m, 4, 10, tmp_m)
+
+	WRITE (tmp_m)
+END get_time
+
+ROUTINE get_day
+VAR
+	time_m : INTEGER
+BEGIN
+	GET_TIME(time_m)
+
+	RETURN (time_m AND -65535)
+END get_day

@@ -1,0 +1,4 @@
+TYPE
+	byte_t FROM byte_lib = STRUCTURE
+	       byte_ : BYTE
+	ENDSTRUCTURE

@@ -1,0 +1,58 @@
+ROUTINE add(this: Vektor_t; v: Vektor_t)										FROM vektor
+ROUTINE sub(this: Vektor_t; v: Vektor_t)										FROM vektor
+ROUTINE divide(this: Vektor_t; v: REAL)											FROM vektor
+ROUTINE mult(this: Vektor_t; v: REAL)											FROM vektor
+ROUTINE dot(this: Vektor_t; v: Vektor_t)						       : REAL			FROM vektor
+ROUTINE angle(this: Vektor_t; v: Vektor_t)						       : REAL		 	FROM vektor
+ROUTINE vabs(this: Vektor_t)								       : Vektor_t		FROM vektor
+ROUTINE scale(this: Vektor_t; s: REAL)											FROM vektor
+ROUTINE projection(this: Vektor_t; v: Vektor_t)							: Vektor_t		FROM vektor
+ROUTINE rejection(this: Vektor_t; v: Vektor_t)							: Vektor_t		FROM vektor
+ROUTINE reflection(this: Vektor_t; v: Vektor_t; t: REAL)		  			: Vektor_t		FROM vektor
+ROUTINE vround(this: Vektor_t)												FROM vektor
+ROUTINE eqtt(this: Vektor_t; v: Vektor_t; tolerance: REAL)					: BOOLEAN 		FROM vektor  
+ROUTINE leq(this: Vektor_t; v: Vektor_t)							: BOOLEAN 		FROM vektor  
+ROUTINE geq(this: Vektor_t; v: Vektor_t)							: BOOLEAN 		FROM vektor  
+ROUTINE ll(this: Vektor_t; v: Vektor_t)								: BOOLEAN 		FROM vektor  
+ROUTINE gg(this: Vektor_t; v: Vektor_t)								: BOOLEAN 		FROM vektor
+ROUTINE eq(this: Vektor_t; v: Vektor_t)								: BOOLEAN 		FROM vektor
+ROUTINE neq(this: Vektor_t; v: Vektor_t)							: BOOLEAN 		FROM vektor 
+ROUTINE is_column(this: Vektor_t) 								: BOOLEAN		FROM vektor
+ROUTINE isUnit(this: Vektor_t) 									: BOOLEAN		FROM vektor
+ROUTINE isUnitt(this: Vektor_t; tolerance: REAL) 						: BOOLEAN		FROM vektor
+ROUTINE isPosDef(this: Vektor_t) 								: BOOLEAN		FROM vektor
+ROUTINE isAlmostPosDef(this: Vektor_t; tolerance: REAL) 					: BOOLEAN		FROM vektor
+ROUTINE transpose(this: Vektor_t)											FROM vektor
+ROUTINE set(this: Vektor_t; idx: INTEGER; v: REAL)									FROM vektor
+ROUTINE get(this: Vektor_t; idx: INTEGER)		 					: REAL 			FROM vektor
+ROUTINE negation(this: Vektor_t)											FROM vektor
+ROUTINE magnitude(this: Vektor_t)								: REAL			FROM vektor
+ROUTINE vlength(this: Vektor_t)									: REAL			FROM vektor
+ROUTINE normalize(this: Vektor_t)								: Vektor_t		FROM vektor
+ROUTINE copy(this: Vektor_t)									: Vektor_t 		FROM vektor
+ROUTINE size(this: Vektor_t) 									: INTEGER		FROM vektor
+ROUTINE vektor_new										: Vektor_t		FROM vektor
+ROUTINE getData(this: Vektor_t)		 							: ARRAY[*] OF REAL	FROM vektor
+ROUTINE sum_components(this: Vektor_t)	 							: REAL			FROM vektor
+ROUTINE squ(this: Vektor_t) 									: Vektor_t		FROM vektor
+ROUTINE pow(this: Vektor_t; v: INTEGER) 							: Vektor_t		FROM vektor
+ROUTINE sqr(this: Vektor_t) 									: Vektor_t		FROM vektor
+ROUTINE sumcsq(this: Vektor_t)	 								: REAL			FROM vektor
+ROUTINE isPerpendicular(this: Vektor_t; v: Vektor_t)						: BOOLEAN		FROM vektor
+ROUTINE isPerpent(this: Vektor_t; v: Vektor_t; toler: REAL)					: BOOLEAN		FROM vektor
+ROUTINE isBackface(lineofsight: Vektor_t; normale: Vektor_t)					: BOOLEAN		FROM vektor
+ROUTINE dist(this: Vektor_t; v: Vektor_t)							: REAL			FROM vektor
+ROUTINE interpolate(this: Vektor_t; v: Vektor_t; c: REAL)					: Vektor_t		FROM vektor
+ROUTINE vektor_min(this: Vektor_t; v: Vektor_t)							: Vektor_t		FROM vektor
+ROUTINE vektor_max(this: Vektor_t; v: Vektor_t)							: Vektor_t		FROM vektor
+
+-- Vektor dim 3
+ROUTINE cross(this: Vektor_t; v: Vektor_t)							: Vektor_t		FROM vektor
+ROUTINE mixed(this: Vektor_t; v: Vektor_t; v2: Vektor_t)					: REAL			FROM vektor
+
+ROUTINE pitch(this: Vektor_t; deg: REAL)       							: Vektor_t		FROM vektor --rotx
+ROUTINE yaw(this: Vektor_t; deg: REAL)								: Vektor_t		FROM vektor --roty
+ROUTINE roll(this: Vektor_t; deg: REAL)								: Vektor_t		FROM vektor --rotz
+ROUTINE apitch(this: Vektor_t; deg: REAL; y: REAL; z: REAL)					: Vektor_t		FROM vektor --arbitrary rotx
+ROUTINE ayaw(this: Vektor_t; deg: REAL; x: REAL; z: REAL)					: Vektor_t	 	FROM vektor --arbitrary roty
+ROUTINE aroll(this: Vektor_t; deg: REAL; x: REAL; y: REAL)					: Vektor_t		FROM vektor --arbitrary rotz

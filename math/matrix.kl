@@ -1,0 +1,416 @@
+PROGRAM matrix
+
+%NOLOCKGROUP
+%ALPHABETIZE 
+%COMMENT = 'matrix' 
+%NOBUSYLAMP 
+%NOPAUSE = COMMAND + TPENABLE + ERROR 
+
+CONST
+	%INCLUDE include/const/math.c
+	%INCLUDE include/const/matrix.c
+	%INCLUDE include/const/vektor.c
+	
+TYPE
+	%INCLUDE include/type/matrix.t
+	%INCLUDE include/type/vektor.t
+
+%INCLUDE include/math.h
+%include include/random.h
+%INCLUDE include/vektor.h
+%include include/matrix.h
+
+ROUTINE hypotenuse(a: REAL; b: REAL) : REAL
+VAR 
+   ret,tmp,a_,b_: REAL
+BEGIN
+		a_ = ABS(A)
+		b_ = ABS(b)
+		ret = 0.0
+	
+		IF (a_ > b_) AND (NOT (a = 0.0)) THEN
+			tmp=b/a
+			ret = (a_ * SQRT(1 + sq(tmp)))
+		ENDIF
+		IF NOT (b = 0.0) THEN
+			tmp = a / b
+			ret = b_ * SQRT(1 + sq(tmp))
+		ENDIF
+		
+		RETURN(ret)
+END hypotenuse
+
+BEGIN
+END matrix
+
+ROUTINE matrix_eye
+	BEGIN
+		RETURN (matrix_diagonal(1.0))
+END matrix_eye
+
+ROUTINE matrix_invers
+	VAR
+		res: Matrix_t
+	BEGIN
+		res = matrix_eye
+		res = matrix_solve( this, res )
+		RETURN ( res )
+END matrix_invers
+
+ROUTINE matrix_solve
+	VAR 
+		ret: Matrix_t
+	BEGIN
+		IF is_matrix_square(this) THEN
+			ret = lu_solve(this, b)-- qr decomposition missing for rectangulare solve
+		--ELSE 
+		-- qr_solve(this,b)
+		ENDIF
+		
+		RETURN (ret)
+END matrix_solve
+
+ROUTINE matrix_determinante
+	VAR
+		lu: LU_t
+	BEGIN
+		lu = lu_new(this)
+		determinant = lu_determinant(lu)
+END matrix_determinante
+
+ROUTINE is_singular_matrix
+	VAR 
+		ret: BOOLEAN
+		i,j: INTEGER
+	BEGIN
+		ret = false
+		
+		FOR i = 1 TO this.n DO
+			IF matrix_get(this,i,i) = 0.0 THEN
+				ret = true
+			ENDIF
+		ENDFOR	
+		RETURN(ret)
+END is_singular_matrix
+
+ROUTINE matrix_row_data
+	VAR
+		row: ARRAY[*] OF REAL
+		i: INTEGER
+	BEGIN
+		FOR i = 1 TO this.m DO
+			row[i] = this.data[idx,i]
+		ENDFOR
+		RETURN ( row )
+END matrix_row_data
+
+ROUTINE matrix_col_data
+	VAR
+		col: ARRAY[*] OF REAL
+		i: INTEGER
+	BEGIN
+		FOR i = 1 TO this.n DO
+			col[i] = this.data[i,idx]
+		ENDFOR
+		RETURN ( col )
+END matrix_col_data
+
+ROUTINE matrix_diagonal
+	VAR 
+		ret: Matrix_t
+		i,j: INTEGER
+	BEGIN
+		ret = matrix_new
+		
+		FOR i = 1 TO ret.n DO
+			FOR j = 1 TO ret.m DO
+				IF i = j THEN
+					matrix_set(ret,i,j,v)
+				ELSE
+					matrix_set(ret,i,j,0.0)
+				ENDIF
+			ENDFOR
+		ENDFOR	
+		RETURN(ret)
+END matrix_diagonal
+
+ROUTINE matrix_random
+	VAR
+		i,j: INTEGER
+		ret: Matrix_t
+	BEGIN
+		ret = matrix_new
+		
+		FOR i = 1 TO ret.n DO
+			FOR j = 1 TO ret.m DO
+				matrix_set(ret,i,j,srand)
+			ENDFOR
+		ENDFOR
+		
+		RETURN(ret)
+END matrix_random
+
+ROUTINE matrix_trace
+	VAR
+		i,j: INTEGER
+		trace: REAL
+	BEGIN
+		FOR i = 1 TO this.n DO
+			FOR j = 1 TO this.m DO
+				trace = trace + matrix_get(this,i,j)
+			ENDFOR
+		ENDFOR
+		
+		RETURN(trace)
+END matrix_trace
+
+ROUTINE matrix_neq
+	BEGIN
+		RETURN ( NOT ( matrix_is_equal (this,m) ) ) 
+END matrix_neq
+
+ROUTINE matrix_sub
+	VAR
+		i,j: INTEGER
+	BEGIN
+		matrix_mult(m,-1.0)
+		matrix_add(this,m)
+END matrix_sub
+
+ROUTINE matrix_add
+	VAR
+		i,j: INTEGER
+	BEGIN
+		FOR i = 1 TO this.n DO
+			FOR j = 1 TO this.m DO
+				matrix_set(this,i,j, matrix_get(m,i,j) + matrix_get(this,i,j))
+			ENDFOR
+		ENDFOR
+END matrix_add
+
+ROUTINE matrix_matrix_mult
+	VAR
+		i,j,k: INTEGER
+		sum: REAL
+		tmprow, tmpcol: ARRAY[*] OF REAL
+	BEGIN
+		sum = 0.0
+		
+		FOR i = 1 TO this.n DO -- zeile of this
+			tmprow = matrix_col_data(this, i)
+			FOR j = 1 TO m.m DO -- spalte of m 
+				tmpcol = matrix_col_data(m, j)
+					FOR k = 1 TO ARRAY_LEN(tmpcol) DO
+						sum = sum + tmprow[k] + tmpcol[k]
+					ENDFOR
+				matrix_set(res,i,j,sum)
+			ENDFOR
+		ENDFOR
+END matrix_matrix_mult
+
+ROUTINE matrix_mult
+	VAR
+		i,j: INTEGER
+	BEGIN
+		FOR i = 1 TO this.n DO
+			FOR j = 1 TO this.m DO
+				matrix_set(this,i,j, s * matrix_get(this,i,j))
+			ENDFOR
+		ENDFOR
+END matrix_mult 
+
+ROUTINE matrix_negate
+	VAR
+		res : Matrix_t
+	BEGIN
+		res = matrix_copy(this)
+		matrix_mult(res,-1.0)
+		RETURN(res)
+END matrix_negate
+
+ROUTINE matrix_frobenius_norm
+	VAR
+		i,j: INTEGER
+		f: REAL
+	BEGIN
+		f=0.0
+		FOR i = 1 TO this.n DO
+			FOR j = 1 TO this.m DO
+				f = hypotenuse(f, this.data[i,j]);
+			ENDFOR
+		ENDFOR
+		RETURN(f)
+END matrix_frobenius_norm 
+
+ROUTINE matrix_inf_norm
+	VAR
+		i,j: INTEGER
+		f,s: REAL
+	BEGIN
+		f=0.0
+		FOR i = 1 TO this.m DO
+			s = 0.0
+			FOR j = 1 TO this.n DO
+				s = s + ABS(this.data[i,j]);
+			ENDFOR
+			f=max(f,s)
+		ENDFOR
+		RETURN(f)
+END matrix_inf_norm
+
+ROUTINE matrix_normal
+	VAR
+		i,j: INTEGER
+		f,s: REAL
+	BEGIN
+		f=0.0
+		FOR i = 1 TO this.n DO
+			s = 0.0
+			FOR j = 1 TO this.m DO
+				s = s + ABS(this.data[i,j]);
+			ENDFOR
+			f=max(f,s)
+		ENDFOR
+		RETURN(f)
+END matrix_normal
+
+ROUTINE matrix_transpose
+	VAR
+		i,j: INTEGER
+	BEGIN
+		IF NOT ((ARRAY_LEN(res) <= 0) OR (ARRAY_LEN(res) > (this.n*this.m))) THEN
+			FOR i = 1 TO this.n DO
+				FOR j = 1 TO this.m DO
+					res[j,i] = this.data[i,j];
+				ENDFOR
+			ENDFOR
+		ENDIF
+END matrix_transpose
+
+ROUTINE matrix_copy
+	VAR
+		ret: Matrix_t
+		i,j: INTEGER
+	BEGIN
+		ret.n = this.n
+		ret.m = this.m
+		FOR i = 1 TO ret.n DO
+			FOR j = 1 TO ret.m DO
+				matrix_set(ret,i,j,matrix_get(this,i,j));
+			ENDFOR
+		ENDFOR
+		RETURN (ret)
+END matrix_copy
+
+ROUTINE matrix_submatrix
+	VAR 
+		ret: Matrix_t
+		i,j: INTEGER
+	BEGIN
+		ret = matrix_new
+	
+		IF NOT ((rs > re) OR (cs > ce) OR
+				(rs < 0) OR (rs >= this.n) OR  (re < 0) OR (re >= this.n) OR 
+				(cs < 0) OR (cs >= this.m) OR  (ce < 0) OR (ce >= this.m)) THEN 
+			
+			ret.n = re-rs 
+			ret.m = ce-cs
+			
+			FOR i = 1 TO ret.n DO
+				FOR j = 1 TO ret.m DO
+					matrix_set(ret,i - rs,j - cs,matrix_get(this,i,j))
+				ENDFOR
+			ENDFOR
+		
+        ENDIF
+            
+        RETURN(ret)
+END matrix_submatrix
+
+ROUTINE matrix_set
+	VAR 
+		res: REAL
+	BEGIN
+		IF ((r < 1) OR (r > this.n)) AND ((c < 1) OR (c > this.m)) THEN
+			this.data[r,c] = H_INF_REAL 
+		ELSE
+			this.data[r,c] = v
+		ENDIF
+		
+END matrix_set 
+
+ROUTINE matrix_get
+	VAR 
+		res: REAL
+	BEGIN
+		IF ((r < 1) OR (r > this.n)) AND ((c < 1) OR (c > this.m)) THEN
+			res = H_INF_REAL
+		ELSE
+			res = matrix_get(this,r,c)
+		ENDIF
+		RETURN(res)
+END matrix_get 
+
+ROUTINE is_matrix_symmetric
+	VAR
+		res: BOOLEAN
+		i, j: INTEGER
+	BEGIN
+		res = true
+		
+		IF NOT is_matrix_square(this) THEN
+			res = false
+		ELSE
+			FOR i = 1 TO this.n DO
+				FOR j = 1 To i DO
+					IF matrix_get(this,i,j) <> matrix_get(this,j,i) THEN
+						res = false
+					ENDIF
+				ENDFOR
+			ENDFOR
+		ENDIF
+		RETURN(res)
+END is_matrix_symmetric
+
+ROUTINE matrix_new
+	VAR
+		ret : Matrix_t
+		i,j : INTEGER
+	BEGIN
+		ret.n = MATRIX_ROW
+		ret.m = MATRIX_COL
+		FOR i = 1 TO ret.n DO
+			FOR j = 1 To ret.m DO
+				matrix_set(ret,i,j,0.0)
+			ENDFOR
+		ENDFOR
+		RETURN (ret)
+END matrix_new
+
+ROUTINE is_matrix_square
+	BEGIN
+		RETURN(this.n = this.m)
+END is_matrix_square
+
+ROUTINE matrix_is_equal
+	VAR 
+		ret: BOOLEAN
+		i,j: INTEGER
+	BEGIN
+		IF (this.n = m.n) AND (this.m = m.m) THEN
+			FOR i = 1 TO this.n DO
+				FOR j = 1 TO this.m DO
+					ret = ret AND (matrix_get(this,i,j) = matrix_get(m,i,j)) 
+				ENDFOR
+			ENDFOR
+		ELSE
+			ret = false
+		ENDIF
+		
+		RETURN(ret)
+END matrix_is_equal
+
+ROUTINE matrix_data
+	BEGIN
+		RETURN (this.data)
+END matrix_data

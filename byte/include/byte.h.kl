@@ -1,0 +1,17 @@
+ROUTINE byte_init    			      : byte_t	 	FROM byte_lib
+ROUTINE byte_array_init(out: ARRAY[*] of byte_t)		FROM byte_lib
+
+ROUTINE lshift(item: INTEGER; steps: INTEGER) : INTEGER 	FROM byte_lib
+ROUTINE rshift(item: INTEGER; steps: INTEGER) : INTEGER 	FROM byte_lib
+ROUTINE shl(item: INTEGER; steps: INTEGER)    : INTEGER 	FROM byte_lib
+ROUTINE shr(item: INTEGER; steps: INTEGER)    : INTEGER 	FROM byte_lib
+
+ROUTINE low_16bit (item: INTEGER)	      : INTEGER	 	FROM byte_lib
+ROUTINE high_16bit (item: INTEGER)	      : INTEGER	 	FROM byte_lib
+
+ROUTINE b2byte(item: BOOLEAN)		      : byte_t          FROM byte_lib
+ROUTINE i2byte(item: INTEGER)		      : ARRAY OF byte_t FROM byte_lib
+ROUTINE s2byte(item: STRING; out: ARRAY[*] of byte_t)           FROM byte_lib
+ROUTINE r2byte(item: REAL)	      	      : ARRAY OF byte_t FROM byte_lib
+
+ROUTINE byte2i(item: ARRAY[*] OF byte_t)      : INTEGER FROM byte_lib

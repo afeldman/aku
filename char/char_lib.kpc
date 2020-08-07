@@ -1,0 +1,17 @@
+name: "kl_char"
+discription: "char lib for working with chars. A char in KAREL is a ASCII element => BYTE"
+version: "0.1.1"
+url: "https://github.com/afeldman/kl_char"
+source: {url:"https://github.com/afeldman/kl_char.git", type:"git", version:"master"}
+requirements: null
+conflicts: null
+author: [{name:"anton feldmann",email: "<anton.feldmann@gmail.com>"}]
+prefix: "/usr/local/"
+srcdir: "."
+typedir: ["include/type"]
+constdir: null
+includedir: ["include/"]
+lib: ["char.kl"]
+types: ["char.t.kl"]
+consts: null
+includes: ["char.h.kl"]

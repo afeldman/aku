@@ -1,0 +1,589 @@
+PROGRAM vektor
+
+%NOLOCKGROUP
+%ALPHABETIZE 
+%COMMENT = 'vektor' 
+%NOBUSYLAMP 
+%NOPAUSE = COMMAND + TPENABLE + ERROR 
+
+CONST
+	%INCLUDE include/const/vektor.c
+
+TYPE
+	%INCLUDE include/type/vektor.t
+
+%INCLUDE include/math.h
+%INCLUDE include/vektor.h
+
+BEGIN
+END vektor
+
+-- Constructer
+
+ROUTINE vektor_new
+VAR
+	ret : Vektor_t
+	i : INTEGER
+BEGIN
+	ret.size = VEKTOR_SIZE;
+	ret.column = true
+	FOR i = 1 TO VEKTOR_SIZE DO
+		ret.data[i] = 0.0
+	ENDFOR
+	RETURN (ret)
+END vektor_new
+
+-- DATA Functions
+
+ROUTINE getData
+BEGIN
+	RETURN (this.data)
+END getData
+
+
+ROUTINE is_column
+BEGIN	
+	RETURN(this.column)
+END is_column
+
+ROUTINE transpose
+BEGIN	
+	this.column = NOT this.column
+END transpose 
+									
+ROUTINE set
+BEGIN
+   IF (idx < this.size) AND (idx > 0) THEN
+      this.data[idx] = v
+   ENDIF
+END set
+ 
+ROUTINE get
+VAR	
+	ret : REAL
+BEGIN
+	IF (idx < this.size) AND (idx > 0) THEN
+		ret = this.data[idx]
+	ELSE
+		ret = 0.0
+	ENDIF
+	RETURN (ret)
+END get
+
+ROUTINE size
+BEGIN
+	RETURN (this.size)
+END size
+
+ROUTINE negation
+BEGIN 
+	mult (this,-1.0)
+END negation
+
+ROUTINE normalize
+VAR
+	ret : Vektor_t
+BEGIN
+	ret = copy(this)
+	divide(ret, magnitude(this))
+
+	RETURN (ret)
+END normalize
+
+ROUTINE vlength
+BEGIN
+	RETURN(magnitude(this))
+END vlength
+
+ROUTINE magnitude
+VAR
+	i: INTEGER
+	ret : REAL
+	tmp : REAL
+BEGIN
+FOR i = 1 TO this.size DO
+	tmp = tmp + get(this,i)*get(this,i)
+ENDFOR
+ret = SQRT(tmp)
+RETURN (ret)
+END magnitude
+
+ROUTINE isUnit
+BEGIN
+	RETURN (magnitude(this) = 1.0)
+END isUnit
+
+ROUTINE isUnitt
+VAR
+	tmp: BOOLEAN
+BEGIN
+	tmp = almostEq(magnitude(this), 1.0, tolerance)
+	RETURN(tmp)
+END isUnitt
+
+ROUTINE isPosDef
+VAR 
+	ret: BOOLEAN
+BEGIN
+	IF dot(this,this) > 0 THEN
+		ret = true
+	ELSE
+		ret = false
+	ENDIF
+END isPosDef
+
+ROUTINE isAlmostPosDef
+VAR
+	tmp: BOOLEAN
+BEGIN
+	tmp = almostEq(dot(this,this), 0.0, tolerance)
+	RETURN(tmp)
+END isAlmostPosDef
+
+--- HELPER FUNCTIONS
+
+ROUTINE sum_components
+VAR
+	ret : REAL
+	i : INTEGER
+BEGIN
+	ret = 0.0
+	
+	FOR i = 1 TO this.size DO
+		ret = ret + get(this,i) 
+	ENDFOR
+	RETURN(ret)
+END sum_components
+	
+ROUTINE squ
+VAR
+	ret : Vektor_t
+	i : INTEGER
+BEGIN
+	ret = copy(this)
+	
+	FOR i = 1 TO this.size DO
+		set(ret,i,get(this,i)*get(this,i)) 
+	ENDFOR
+	RETURN(ret)
+END squ
+
+ROUTINE pow
+VAR
+	ret : Vektor_t
+	i : INTEGER
+BEGIN
+	ret = copy(this)
+	FOR i = 1 TO this.size DO
+		ret.data[i] = power(get(this,i), v) 
+	ENDFOR
+	RETURN(ret)
+END pow
+
+ROUTINE sqr
+VAR
+	ret : Vektor_t
+	i : INTEGER
+BEGIN
+	ret = copy(this)
+	
+	FOR i = 1 TO this.size DO
+		ret.data[i] = SQRT(get(this,i)) 
+	ENDFOR
+	RETURN(ret)
+END sqr
+
+ROUTINE sumcsq
+VAR	
+	tmp: Vektor_t
+BEGIN
+	tmp = squ(this)
+	RETURN( sum_components( tmp ) )
+END sumcsq
+
+ROUTINE vabs
+VAR
+	ret: Vektor_t
+	i: INTEGER
+BEGIN
+	ret = vektor_new
+
+	FOR i = 1 TO this.size DO
+		ret.data[i] = ABS(get(this,i)) 
+	ENDFOR
+
+	RETURN(ret)
+END vabs
+
+--- logic
+
+ROUTINE eq
+VAR
+	i	: INTEGER
+	ret	: BOOLEAN
+BEGIN
+	IF this.size = v.size THEN
+		FOR i = 1 TO this.size DO
+			ret = ret AND (get(this,i) = get(v,i))
+		ENDFOR
+	ELSE
+		ret = false
+	ENDIF
+		
+	RETURN(ret)
+END eq
+
+ROUTINE leq
+BEGIN 
+	RETURN ( sumcsq(this) <= sumcsq(v) )
+END leq
+
+ROUTINE geq
+BEGIN	
+	RETURN ( NOT leq(this,v) )
+END geq
+
+ROUTINE neq
+BEGIN
+	RETURN( NOT eq(this,v) )
+END neq 
+
+ROUTINE ll
+BEGIN 
+	RETURN ( sumcsq(this) < sumcsq(v) )
+END ll
+
+ROUTINE gg
+BEGIN 
+	RETURN ( NOT ll(this,v) )
+END gg
+
+ROUTINE eqtt
+VAR 
+	i: INTEGER
+	ret: BOOLEAN
+BEGIN
+	FOR i = 1 TO this.size DO
+		ret = ret AND almostEq(get(this,i), get(v,i), tolerance)
+	ENDFOR
+	
+	RETURN(ret)
+END eqtt
+
+-- calculus
+
+ROUTINE sub
+VAR
+	i	: INTEGER
+BEGIN
+	IF this.size <> v.size THEN
+		this.size = -1;
+	ELSE
+		FOR i = 1 TO this.size DO
+			set(this,i,get(this,i)-get(v,i)) 
+		ENDFOR
+	ENDIF
+END sub
+
+ROUTINE add
+VAR
+	i	: INTEGER
+BEGIN
+	IF this.size <> v.size THEN
+		this.size = -1;
+	ELSE
+		FOR i = 1 TO this.size DO
+			set(this,i,(get(this,i)+get(v,i))) 
+		ENDFOR
+	ENDIF
+END add
+
+ROUTINE mult
+VAR
+	i	: INTEGER
+BEGIN
+	FOR i = 1 TO this.size DO
+		set(this,i,get(this,i) * v)
+	ENDFOR
+END mult
+
+ROUTINE divide
+VAR
+	i	: INTEGER
+BEGIN
+	IF v <> 0.0 THEN
+		FOR i = 1 TO this.size DO
+			set(this,i,get(this,i) / v) 
+		ENDFOR
+	ELSE 
+		this.size = -1;
+	ENDIF
+END divide
+
+ROUTINE copy
+VAR
+	ret: Vektor_t
+	i: INTEGER
+BEGIN
+	ret = vektor_new
+	
+	ret.size = this.size
+	ret.column = this.column
+	FOR i = 1 TO this.size DO
+		set(ret,i,get(this,i)) 
+	ENDFOR
+END copy
+
+ROUTINE dot
+VAR
+	ret: REAL
+	i: INTEGER
+BEGIN
+	ret = 0.0
+	IF v.size <> this.size THEN
+		ret = 0.0
+	ELSE
+		FOR i = 1 TO this.size DO
+			ret = ret + ( get(this,i) * get(v,i) )
+		ENDFOR
+	ENDIF
+	RETURN(ret)
+END dot
+
+ROUTINE angle
+VAR 
+	ret: REAL
+	tmpt: Vektor_t
+	tmp: Vektor_t
+BEGIN
+	tmpt = normalize(this)
+	tmp = normalize(v)
+	IF eq(this,v) THEN
+		ret = 0.0
+	ELSE
+		ret = ACOS( min(1.0, dot(tmpt,tmp) ) )
+	ENDIF
+	RETURN(ret)
+END angle
+
+ROUTINE cross
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = vektor_new
+	IF (v.size = 3 ) AND (this.size = 3) THEN
+		set(ret,1,(get(this,2) * get(v,3) - get(this,3) * get(v,2)))
+		set(ret,2,(get(this,3) * get(v,1) - get(this,1) * get(v,3)))
+		set(ret,2,(get(this,1) * get(v,2) - get(this,2) * get(v,1)))
+	ENDIF
+	
+	RETURN(ret)
+END cross
+
+ROUTINE projection
+VAR
+	ret: Vektor_t
+	i: INTEGER
+	tmp: REAL
+BEGIN
+	ret = copy(this)
+	tmp = dot(ret,v) / sq(magnitude(v))
+	
+	FOR i = 1 TO this.size DO
+		set(ret,i,(get(v,i) * tmp))
+	ENDFOR
+	
+	RETURN(ret)
+END projection
+
+ROUTINE rejection
+VAR
+	tmp,res: Vektor_t
+BEGIN
+	res = copy(this)
+	tmp = projection(this,v)
+	sub( res, tmp)
+	RETURN( res )
+END rejection
+
+ROUTINE scale
+BEGIN
+	mult(this,(s/magnitude(this)))
+END scale
+
+ROUTINE reflection
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = copy(this)
+	
+	IF (ABS(angle(this,v)) - (m_pi/2) < t) THEN
+		mult(ret,-1)
+	ELSE
+		ret = projection(ret,v)
+		mult(ret,2)
+		sub(ret,this);
+	ENDIF
+	scale(ret, magnitude(this))
+	RETURN( ret )
+END reflection
+
+ROUTINE pitch
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = vektor_new
+	IF this.size = 3 THEN
+		set(ret, 1, get(this,1))
+		set(ret, 2, ((get(this,2) * COS(deg)) - (get(this,3) * SIN(deg))))
+		set(ret, 3, ((get(this,2) * SIN(deg)) + (get(this,3) * COS(deg))))
+			
+	ENDIF
+	RETURN (ret)
+END pitch
+
+ROUTINE yaw
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = vektor_new
+	IF this.size = 3 THEN
+		set(ret, 1, ((get(this,3) * SIN(deg)) + (get(this,1) * COS(deg))))
+		set(ret, 2, get(this,2))
+		set(ret, 3, ((get(this,3) * COS(deg)) - (get(this,1) * SIN(deg))))
+			
+	ENDIF
+	RETURN (ret)
+END yaw
+
+ROUTINE roll
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = vektor_new
+	IF this.size = 3 THEN
+		set(ret, 1, ((get(this,1) * COS(deg)) - (get(this,2) * SIN(deg))))
+		set(ret, 2, ((get(this,1) * SIN(deg)) + (get(this,2) * COS(deg))))
+		set(ret, 3, get(this,3))
+	ENDIF
+	RETURN (ret)
+END roll
+
+ROUTINE mixed
+VAR
+	tmp: Vektor_t
+BEGIN
+	tmp = cross(this,v)
+	RETURN (dot(tmp,v2))
+END mixed
+
+
+ROUTINE isPerpendicular
+BEGIN
+	RETURN (angle(this,v) = 0.0)
+END isPerpendicular
+
+ROUTINE isPerpent
+VAR
+	ret: BOOLEAN
+BEGIN
+	ret = almostEq( angle(this,v) , 0.0, toler)
+	RETURN ( ret )
+END isPerpent
+
+ROUTINE isBackface
+BEGIN
+	RETURN( dot(normale,lineofsight) < 0 )
+END isBackface 
+
+ROUTINE dist
+VAR
+	tmp: Vektor_t
+BEGIN
+	tmp = copy(this)
+	sub(tmp,v)
+	RETURN(vlength(tmp))
+END dist 
+
+
+ROUTINE interpolate
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = vektor_new
+	IF (v.size = 3 ) AND (this.size = 3) AND (c <= 1.0) AND (c > 0.0) THEN
+		set(ret,1,( get(this,1) * (1.0 - c) + get(v,1) * c ))
+		set(ret,2,( get(this,2) * (1.0 - c) + get(v,2) * c ))
+		set(ret,2,( get(this,3) * (1.0 - c) + get(v,3) * c ))
+	ENDIF
+		
+	RETURN(ret)
+END interpolate
+
+ROUTINE vektor_min
+BEGIN 
+	IF leq(this,v) THEN
+		RETURN (this)
+	ELSE
+		RETURN (v)
+	ENDIF
+END vektor_min 
+
+ROUTINE vektor_max
+BEGIN 
+	IF geq(this,v) THEN
+		RETURN (this)
+	ELSE
+		RETURN (v)
+	ENDIF
+END vektor_max
+
+ROUTINE apitch
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = vektor_new
+	IF this.size = 3 THEN
+		set(ret, 1, get(this,1))
+		set(ret, 2, ((get(this,2) * COS(deg)) - (get(this,3) * SIN(deg)) + (y * (1.0-COS(deg))) + (z * SIN(deg))))
+		set(ret, 3, ((get(this,2) * SIN(deg)) + (get(this,3) * COS(deg)) + (z * (1.0-COS(deg))) - (y * SIN(deg)) ))
+			
+	ENDIF
+	RETURN (ret)
+END apitch
+
+ROUTINE ayaw
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = vektor_new
+	IF this.size = 3 THEN
+		set(ret, 1, ((get(this,3) * SIN(deg)) + (get(this,1) * COS(deg)) + (x * (1.0-COS(deg))) - ( z * SIN(deg)) ))
+		set(ret, 2, get(this,2))
+		set(ret, 3, ((get(this,3) * COS(deg)) - (get(this,1) * SIN(deg)) + (z * (1.0-COS(deg))) + (x * SIN(deg)) ))
+			
+	ENDIF
+	RETURN (ret)
+END ayaw
+
+ROUTINE aroll
+VAR
+	ret: Vektor_t
+BEGIN
+	ret = vektor_new
+	IF this.size = 3 THEN
+		set(ret, 1, ((get(this,1) * COS(deg)) - (get(this,2) * SIN(deg)) + (x * (1.0 - COS(deg))) + (y * SIN(deg)) ))
+		set(ret, 2, ((get(this,1) * SIN(deg)) + (get(this,2) * COS(deg)) + (y * (1.0 - COS(deg))) - (x * SIN(deg)) ))
+		set(ret, 3, get(this,3))
+	ENDIF
+	RETURN (ret)
+END aroll
+
+ROUTINE vround
+VAR
+	i : INTEGER
+BEGIN		
+	FOR i = 1 TO this.size DO
+		set(this,i,ROUND(get(this,i)))
+	ENDFOR
+END vround
